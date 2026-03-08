@@ -16,36 +16,23 @@ async function fetchYorkAppointments(programId: string) {
 }
 
 function extractAppointmentsFromHtml(html: string) {
-  const matches = [
-    ...html.matchAll(/appointments\[(\d+)]\[(\w+)]\s*([\s\S]*?)(?=appointments|\n\n|$)/g),
-  ]
-
   const appointments: any[] = []
 
-  const temp: Record<string, any> = {}
+  const keyValueRegex = /appointments\[(\d+)]\[(.+?)]\r?\n([^\r\n]*)/g
 
-  html.split('\n').forEach((line) => {
-    const parts = line.split('\t')
+  for (const match of html.matchAll(keyValueRegex)) {
+    const indexNumber = Number(match[1])
+    const field = match[2]
+    const value = match[3] ?? ''
 
-    if (parts.length === 2) {
-      const key = parts[0]
-      const value = parts[1]
-
-      const match = key.match(/appointments\[(\d+)]\[(.+)]/)
-
-      if (match) {
-        const index = match[1]
-        const field = match[2]
-        const indexNumber = Number(index)
-
-        if (!appointments[indexNumber]) appointments[indexNumber] = {}
-
-        appointments[indexNumber][field] = value
-      }
+    if (!appointments[indexNumber]) {
+      appointments[indexNumber] = {}
     }
-  })
 
-  return appointments.filter(Boolean)
+    appointments[indexNumber][field] = value
+  }
+
+  return appointments.filter((appt) => appt?.StartDate && appt?.EndDate)
 }
 
 function mapAppointmentsToRows(
@@ -56,21 +43,16 @@ function mapAppointmentsToRows(
   return appointments.map((appt) => ({
     program_id: programId,
     sport_name: appt.ProductName || 'Drop-In Session',
-    session_date: appt.StartDate.slice(0, 10),
-    start_time: new Date(appt.StartDate).toLocaleTimeString(),
-    end_time: new Date(appt.EndDate).toLocaleTimeString(),
-    location: appt.Location || null,
-    spots_available: appt.ClassSize ? Number(appt.ClassSize) : null,
     source_url: sourceUrl,
-    york_appointment_id: appt.ID,
-    session_key: `${programId}_${appt.StartDate}_${appt.Location}`,
+    session_key: `${programId}_${appt.StartDate}_${appt.EndDate}_${appt.Location ?? 'unknown'}`,
     is_active: true,
     last_synced_at: new Date().toISOString(),
   }))
 }
 
 export async function syncYorkProgram() {
-  const programId = 'c35f024c-0824-4487-bfb1-83ab0bb5b41c'
+  const programId =
+    process.env.TEST_YORK_PROGRAM_ID ?? 'f95e69d2-105a-41d1-b63e-8ce0906a63bf'
 
   const html = await fetchYorkAppointments(programId)
 
@@ -81,7 +63,7 @@ export async function syncYorkProgram() {
   const rows = mapAppointmentsToRows(
     appointments,
     programId,
-    `https://reconline.yorkulions.ca/Program/GetProgramInstances?programID=${programId}`
+    `https://reconline.yorkulions.ca/Program/GetProgramDetails?courseId=${programId}`
   )
 
   const { data, error } = await supabaseAdmin

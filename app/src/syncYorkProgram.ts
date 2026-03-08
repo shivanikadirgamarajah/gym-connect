@@ -40,13 +40,7 @@ function mapAppointmentsToRows(
   return appointments.map((appt) => ({
     program_id: programId,
     sport_name: appt.ProductName || 'Drop-In Session',
-    session_date: formatDatePart(appt.StartDate),
-    start_time: formatTimePart(appt.StartDate),
-    end_time: formatTimePart(appt.EndDate),
-    location: appt.Location || null,
-    spots_available: appt.ClassSize ? Number(appt.ClassSize) : null,
     source_url: sourceUrl,
-    york_appointment_id: appt.ID,
     session_key: buildSessionKey(
       programId,
       appt.StartDate,
@@ -82,10 +76,12 @@ function parseDate(input: string): string | null {
 }
 
 export async function syncOneProgram(programId: string, sportName: string) {
-  const sourceUrl =
+  const fetchUrl =
     `https://reconline.yorkulions.ca/Program/GetProgramInstances?programID=${programId}`
+  const sourceUrl =
+    `https://reconline.yorkulions.ca/Program/GetProgramDetails?courseId=${programId}`
 
-  const response = await fetch(sourceUrl, {
+  const response = await fetch(fetchUrl, {
     headers: {
       'User-Agent': 'Mozilla/5.0',
     },
@@ -163,13 +159,10 @@ export async function syncOneProgram(programId: string, sportName: string) {
     throw new Error('Could not parse date or time')
   }
 
-  const today = new Date().toISOString().slice(0, 10)
-
   const { error: deactivateError } = await supabaseAdmin
     .from('dropin_sessions')
     .update({ is_active: false })
     .eq('program_id', programId)
-    .gte('session_date', today)
 
   if (deactivateError) {
     throw new Error(`Failed to deactivate old sessions: ${deactivateError.message}`)

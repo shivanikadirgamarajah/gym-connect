@@ -70,23 +70,28 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-6">
-      <div className="w-full max-w-md rounded-2xl border p-6 shadow-sm">
-        <h1 className="text-2xl font-bold mb-2">Login</h1>
-        <p className="text-sm text-gray-600 mb-6">
+    <main className="min-h-screen bg-red-900 flex items-start justify-center p-6 pt-10 md:pt-16">
+      <div className="w-full max-w-6xl">
+        <h1 className="whitespace-nowrap text-center text-[clamp(3rem,12vw,8rem)] font-bold tracking-[0.12em] text-white">
+          BUDDY FINDER
+        </h1>
+
+        <div className="surface-card fade-rise mx-auto mt-10 w-full max-w-md rounded-3xl p-7 md:mt-12 md:p-8">
+        <h1 className="text-3xl font-semibold mb-2">Login/Sign Up</h1>
+        <p className="text-sm ink-soft mb-6">
           Use your university email to get a one-time code.
         </p>
 
         {step === 'email' ? (
           <form onSubmit={handleSendOtp} className="space-y-4">
             <div>
-              <label className="block text-sm mb-1">University email</label>
+              <label className="block text-sm mb-1 font-medium">University email</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="yourname@yorku.ca"
-                className="w-full rounded-lg border px-3 py-2"
+                className="w-full rounded-xl border border-[var(--line)] bg-[var(--surface)] px-3 py-2.5 outline-none focus:border-[var(--accent)]"
                 required
               />
             </div>
@@ -94,7 +99,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-lg border px-4 py-2 font-medium"
+              className="cta w-full rounded-xl px-4 py-2.5 font-medium"
             >
               {loading ? 'Sending...' : 'Send code'}
             </button>
@@ -102,23 +107,23 @@ export default function LoginPage() {
         ) : (
           <form onSubmit={handleVerifyOtp} className="space-y-4">
             <div>
-              <label className="block text-sm mb-1">Email</label>
+              <label className="block text-sm mb-1 font-medium">Email</label>
               <input
                 type="email"
                 value={email}
                 disabled
-                className="w-full rounded-lg border px-3 py-2 bg-gray-100"
+                className="w-full rounded-xl border border-[var(--line)] bg-zinc-100 px-3 py-2.5"
               />
             </div>
 
             <div>
-              <label className="block text-sm mb-1">8-digit code</label>
+              <label className="block text-sm mb-1 font-medium">8-digit code</label>
               <input
                 type="text"
                 value={token}
                 onChange={(e) => setToken(e.target.value)}
                 placeholder="123456"
-                className="w-full rounded-lg border px-3 py-2"
+                className="w-full rounded-xl border border-[var(--line)] bg-[var(--surface)] px-3 py-2.5 outline-none focus:border-[var(--accent)]"
                 required
               />
             </div>
@@ -126,7 +131,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-lg border px-4 py-2 font-medium"
+              className="cta w-full rounded-xl px-4 py-2.5 font-medium"
             >
               {loading ? 'Verifying...' : 'Verify code'}
             </button>
@@ -134,14 +139,15 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={() => setStep('email')}
-              className="w-full rounded-lg px-4 py-2 text-sm underline"
+              className="w-full rounded-xl border border-[var(--line)] bg-[var(--surface)] px-4 py-2.5 text-sm"
             >
               Use a different email
             </button>
           </form>
         )}
 
-        {message && <p className="mt-4 text-sm">{message}</p>}
+        {message && <p className="mt-4 text-sm ink-soft">{message}</p>}
+        </div>
       </div>
     </main>
   )
