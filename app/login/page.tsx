@@ -21,10 +21,17 @@ export default function LoginPage() {
 
     const cleanEmail = email.trim().toLowerCase()
 
+    const ALLOWED_EMAILS = [
+      'shivanikadirgamrajah@gmail.com',
+      'shivanikadirgamarajah@gmail.com',
+      'apples7772201@gmail.com',
+    ]
+
     const [, domain = ''] = cleanEmail.split('@')
     const isYorkDomain = domain === 'yorku.ca' || domain.endsWith('.yorku.ca')
+    const isAllowed = isYorkDomain || ALLOWED_EMAILS.includes(cleanEmail)
 
-    if (!isYorkDomain) {
+    if (!isAllowed) {
       setMessage('Use your York University email address.')
       setLoading(false)
       return
@@ -34,6 +41,8 @@ export default function LoginPage() {
       email: cleanEmail,
       options: {
         shouldCreateUser: true,
+        // For ALLOWED_EMAILS, do NOT set emailRedirectTo, so only code is sent
+        // For York emails, also do NOT set emailRedirectTo, so only code is sent
       },
     })
 

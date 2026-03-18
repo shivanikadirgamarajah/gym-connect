@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/app/supabase/server'
 import LogoutButton from '@/app/components/LogoutButton'
+import GetBuddyButton from './GetBuddyButton'
 
 type Session = {
   session_key: string
@@ -110,7 +112,15 @@ export default async function FeedPage() {
           <h1 className="text-2xl font-semibold md:text-3xl">Buddy Finder</h1>
           <p className="text-sm text-red-200">find your partner to play a sport!</p>
         </div>
-        <LogoutButton />
+        <div className="flex items-center gap-2">
+          <Link
+            href="/messages"
+            className="rounded-xl border border-black bg-blue-900 px-3 py-2.5 text-sm font-medium text-white transition hover:bg-blue-950"
+          >
+            Messages
+          </Link>
+          <LogoutButton />
+        </div>
       </div>
 
       <p className="mt-4 text-sm ink-soft">Signed in as {user.email}</p>
@@ -157,7 +167,7 @@ export default async function FeedPage() {
                               Time Schedule
                             </a>
                           ) : null}
-                          <span className="text-sm font-semibold text-red-600">get a buddy here</span>
+                          <GetBuddyButton sport={sport} sessionKey={session.session_key} />
                         </div>
                       </li>
                     ))}
