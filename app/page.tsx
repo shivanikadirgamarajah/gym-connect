@@ -36,7 +36,7 @@ export default function Home() {
           <span className="text-lg font-bold tracking-tight text-white">Buddy Finder</span>
           <Link
             href="/login"
-            className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur transition hover:bg-white/20"
+            className="btn-press rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur transition hover:bg-white/20"
           >
             Sign in
           </Link>
@@ -63,13 +63,13 @@ export default function Home() {
           <div className="fade-rise stagger-2 mt-8 flex flex-col items-center gap-3 sm:flex-row">
             <Link
               href="/login"
-              className="rounded-full bg-red-600 px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-red-900/40 transition hover:bg-red-500 hover:shadow-red-800/60"
+              className="btn-press rounded-full bg-red-600 px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-red-900/40 transition hover:bg-red-500 hover:shadow-red-800/60 hover:-translate-y-0.5"
             >
               Get started free →
             </Link>
             <Link
               href="/feed"
-              className="rounded-full border border-white/20 bg-white/5 px-7 py-3 text-sm font-semibold text-white/80 backdrop-blur transition hover:bg-white/10"
+              className="btn-press rounded-full border border-white/20 bg-white/5 px-7 py-3 text-sm font-semibold text-white/80 backdrop-blur transition hover:bg-white/10 hover:-translate-y-0.5"
             >
               View live feed
             </Link>
@@ -92,7 +92,7 @@ export default function Home() {
             {FEATURES.map((f) => (
               <div
                 key={f.title}
-                className="rounded-2xl border border-white/10 bg-white/5 p-5 text-left backdrop-blur"
+                className="rounded-2xl border border-white/10 bg-white/5 p-5 text-left backdrop-blur transition hover:bg-white/10 hover:border-white/20"
               >
                 <span className="text-2xl">{f.icon}</span>
                 <p className="mt-3 text-sm font-semibold text-white">{f.title}</p>

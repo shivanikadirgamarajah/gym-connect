@@ -71,7 +71,7 @@ export default function LoginPage() {
       setMessage(error.message)
     } else {
       setMessage('Logged in successfully.')
-      router.push('/feed')
+      router.push('/complete-profile')
       router.refresh()
     }
 
@@ -108,7 +108,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="cta w-full rounded-xl px-4 py-2.5 font-medium"
+              className="cta btn-press w-full rounded-xl px-4 py-2.5 font-medium"
             >
               {loading ? 'Sending...' : 'Send code'}
             </button>
@@ -140,7 +140,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="cta w-full rounded-xl px-4 py-2.5 font-medium"
+              className="cta btn-press w-full rounded-xl px-4 py-2.5 font-medium"
             >
               {loading ? 'Verifying...' : 'Verify code'}
             </button>
@@ -148,7 +148,7 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={() => setStep('email')}
-              className="w-full rounded-xl border border-[var(--line)] bg-[var(--surface)] px-4 py-2.5 text-sm"
+              className="btn-press w-full rounded-xl border border-[var(--line)] bg-[var(--surface)] px-4 py-2.5 text-sm transition hover:bg-zinc-50"
             >
               Use a different email
             </button>

@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/app/supabase/server'
 import LogoutButton from '@/app/components/LogoutButton'
+import MessagesButton from '@/app/components/MessagesButton'
 import GetBuddyButton from './GetBuddyButton'
 
 type Session = {
@@ -11,10 +12,19 @@ type Session = {
 }
 
 function hasSportBackground(sport: string) {
-  return /badminton|basketball|bingo|game\s*-?\s*night|trivia\s*-?\s*night|futsal|volleyball|pickleball|turf\s*-?\s*soccer|turfsoccer/i.test(sport)
+  return /badminton|basketball|bingo|game\s*-?\s*night|trivia\s*-?\s*night|futsal|volleyball|pickleball|turf\s*-?\s*soccer|turfsoccer|soccer|squash|table[ _-]?tennis|tennis|board[ _-]?games/i.test(sport)
 }
 
 function getSportCardBackground(sport: string) {
+        if (/tennis/i.test(sport) && !/table[ _-]?tennis/i.test(sport)) {
+          return "linear-gradient(rgba(18, 32, 10, 0.32), rgba(18, 32, 10, 0.32)), url('/tennis.jpg')"
+        }
+      if (/table[ _-]?tennis/i.test(sport)) {
+        return "linear-gradient(rgba(26, 12, 8, 0.22), rgba(26, 12, 8, 0.22)), url('/tabletennis.jpg')"
+      }
+    if (/squash/i.test(sport)) {
+      return "linear-gradient(rgba(20, 10, 24, 0.54), rgba(20, 10, 24, 0.54)), url('/squash.jpg')"
+    }
   if (/badminton/i.test(sport)) {
     return "linear-gradient(rgba(10, 24, 20, 0.58), rgba(10, 24, 20, 0.58)), url('/badminton-bg.jpeg')"
   }
@@ -27,7 +37,7 @@ function getSportCardBackground(sport: string) {
     return "linear-gradient(rgba(35, 18, 10, 0.52), rgba(35, 18, 10, 0.52)), url('/bingo-bg.jpg')"
   }
 
-  if (/game\s*-?\s*night/i.test(sport)) {
+  if (/board[ _-]?games/i.test(sport)) {
     return "linear-gradient(rgba(17, 14, 28, 0.56), rgba(17, 14, 28, 0.56)), url('/gamenight-bg.jpg')"
   }
 
@@ -47,7 +57,7 @@ function getSportCardBackground(sport: string) {
     return "linear-gradient(rgba(16, 23, 10, 0.5), rgba(16, 23, 10, 0.5)), url('/pickleball.jpg')"
   }
 
-  if (/turf\s*-?\s*soccer|turfsoccer/i.test(sport)) {
+  if (/turf\s*-?\s*soccer|turfsoccer|soccer/i.test(sport)) {
     return "linear-gradient(rgba(8, 24, 10, 0.54), rgba(8, 24, 10, 0.54)), url('/turfsoccer.jpg')"
   }
 
@@ -84,6 +94,11 @@ export default async function FeedPage() {
     redirect('/login')
   }
 
+  const meta = user.user_metadata
+  if (!meta?.display_name || !meta?.degree) {
+    redirect('/complete-profile')
+  }
+
   const { data, error } = await supabase
     .from('dropin_sessions')
     .select('session_key, sport_name, source_url')
@@ -113,12 +128,7 @@ export default async function FeedPage() {
           <p className="text-sm text-red-200">find your partner to play a sport!</p>
         </div>
         <div className="flex items-center gap-2">
-          <Link
-            href="/messages"
-            className="rounded-xl border border-black bg-blue-900 px-3 py-2.5 text-sm font-medium text-white transition hover:bg-blue-950"
-          >
-            Messages
-          </Link>
+          <MessagesButton />
           <LogoutButton />
         </div>
       </div>
@@ -135,7 +145,7 @@ export default async function FeedPage() {
               {sportEntries.map(([sport, sportSessions], idx) => (
                 <article
                   key={sport}
-                  className={`surface-card fade-rise min-h-56 rounded-2xl p-6 ${hasSportBackground(sport) ? 'border-white/40 text-white' : ''} ${idx % 2 === 0 ? 'stagger-1' : 'stagger-2'}`}
+                  className={`surface-card card-lift fade-rise min-h-70 rounded-2xl p-6 ${hasSportBackground(sport) ? 'border-white/40 text-white' : ''} ${idx % 2 === 0 ? 'stagger-1' : 'stagger-2'}`}
                   style={
                     hasSportBackground(sport)
                       ? {
@@ -167,7 +177,7 @@ export default async function FeedPage() {
                               Time Schedule
                             </a>
                           ) : null}
-                          <GetBuddyButton sport={sport} sessionKey={session.session_key} />
+                          <GetBuddyButton sport={sport} sessionKey={session.session_key} userName={meta.display_name} userDegree={meta.degree} />
                         </div>
                       </li>
                     ))}

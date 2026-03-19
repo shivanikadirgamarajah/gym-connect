@@ -3,20 +3,22 @@
 import { FormEvent, useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 
+type Buddy = { display_name: string; degree: string; preferred_time_start: string; preferred_time_end: string }
+
 type MatchResult =
-  | { matched: true; buddy: { display_name: string; degree: string; preferred_time: string } }
+  | { matched: true; buddies: Buddy[] }
   | { matched: false }
 
 type GetBuddyButtonProps = {
   sport: string
   sessionKey: string
+  userName?: string
+  userDegree?: string
 }
 
-export default function GetBuddyButton({ sport, sessionKey }: GetBuddyButtonProps) {
+export default function GetBuddyButton({ sport, sessionKey, userName, userDegree }: GetBuddyButtonProps) {
   const [mounted, setMounted] = useState(false)
   const [open, setOpen] = useState(false)
-  const [name, setName] = useState('')
-  const [degree, setDegree] = useState('')
   const [date, setDate] = useState('')
   const [timeStart, setTimeStart] = useState('')
   const [timeEnd, setTimeEnd] = useState('')
@@ -43,8 +45,8 @@ export default function GetBuddyButton({ sport, sessionKey }: GetBuddyButtonProp
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sport_name: sport,
-          display_name: name,
-          degree,
+          display_name: userName,
+          degree: userDegree,
           preferred_date: date,
           preferred_time_start: timeStart,
           preferred_time_end: timeEnd,
@@ -75,7 +77,7 @@ export default function GetBuddyButton({ sport, sessionKey }: GetBuddyButtonProp
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="text-sm font-semibold text-red-600 underline underline-offset-2"
+        className="btn-press text-sm font-semibold text-red-600 underline underline-offset-2 transition-colors hover:text-red-800"
       >
         get a buddy
       </button>
@@ -83,7 +85,7 @@ export default function GetBuddyButton({ sport, sessionKey }: GetBuddyButtonProp
       {mounted && open
         ? createPortal(
             <div
-              className="fixed inset-0 z-[999] grid place-items-center bg-black/60 p-4"
+              className="modal-backdrop fixed inset-0 z-[999] grid place-items-center bg-black/60 p-4"
               onClick={(e) => {
                 if (e.target === e.currentTarget) {
                   closeModal()
@@ -91,7 +93,7 @@ export default function GetBuddyButton({ sport, sessionKey }: GetBuddyButtonProp
               }}
             >
               <div
-                className="w-full max-w-md rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-6 shadow-2xl max-h-[90vh] overflow-y-auto"
+                className={`modal-card w-full max-w-2xl rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-10 shadow-2xl max-h-[90vh] overflow-y-auto`}
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-start justify-between gap-3">
@@ -111,34 +113,40 @@ export default function GetBuddyButton({ sport, sessionKey }: GetBuddyButtonProp
 
                 {result ? (
                   result.matched ? (
-                    <div className="mt-5 space-y-3">
-                      <div className="rounded-xl bg-green-50 border border-green-200 p-4">
-                        <p className="text-sm font-semibold text-green-800">Buddy found!</p>
-                        <p className="mt-1 text-sm text-green-700">
-                          Your buddy is <strong>{result.buddy.display_name}</strong> ({result.buddy.degree}),
-                          available from {result.buddy.preferred_time_start} to {result.buddy.preferred_time_end}.
+                    <div className="mt-8 space-y-6">
+                      <div className="rounded-xl bg-green-50 border border-green-200 p-6">
+                        <p className="text-base font-semibold text-green-800">
+                          {result.buddies.length === 1 ? 'Buddy found!' : `${result.buddies.length} buddies found!`}
                         </p>
+                        <ul className="mt-3 space-y-3">
+                          {result.buddies.map((b, i) => (
+                            <li key={i} className="text-sm text-green-700">
+                              <strong>{b.display_name}</strong> ({b.degree}),
+                              available {b.preferred_time_start} – {b.preferred_time_end}
+                            </li>
+                          ))}
+                        </ul>
                       </div>
                       <button
                         type="button"
                         onClick={closeModal}
-                        className="w-full rounded-xl bg-red-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-red-800"
+                        className="btn-press w-full rounded-xl bg-red-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-red-800"
                       >
                         Done
                       </button>
                     </div>
                   ) : (
-                    <div className="mt-5 space-y-3">
-                      <div className="rounded-xl bg-amber-50 border border-amber-200 p-4">
-                        <p className="text-sm font-semibold text-amber-800">Request saved!</p>
-                        <p className="mt-1 text-sm text-amber-700">
+                    <div className="mt-8 space-y-6">
+                      <div className="rounded-xl bg-amber-50 border border-amber-200 p-6">
+                        <p className="text-base font-semibold text-amber-800">Request saved!</p>
+                        <p className="mt-2 text-sm text-amber-700">
                           No one is available right now for {date} around {time}. We'll notify you when someone with an overlapping time signs up.
                         </p>
                       </div>
                       <button
                         type="button"
                         onClick={closeModal}
-                        className="w-full rounded-xl bg-red-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-red-800"
+                        className="btn-press w-full rounded-xl bg-red-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-red-800"
                       >
                         Done
                       </button>
@@ -146,28 +154,6 @@ export default function GetBuddyButton({ sport, sessionKey }: GetBuddyButtonProp
                   )
                 ) : (
                   <form onSubmit={handleSubmit} className="mt-5 space-y-4">
-                    <div>
-                      <label className="mb-1 block text-sm font-medium text-zinc-800">Name</label>
-                      <input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className="w-full rounded-xl border border-[var(--line)] bg-white px-3 py-2.5 outline-none focus:border-[var(--accent)]"
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <label className="mb-1 block text-sm font-medium text-zinc-800">Degree</label>
-                      <input
-                        type="text"
-                        value={degree}
-                        onChange={(e) => setDegree(e.target.value)}
-                        className="w-full rounded-xl border border-[var(--line)] bg-white px-3 py-2.5 outline-none focus:border-[var(--accent)]"
-                        required
-                      />
-                    </div>
-
                     <div>
                       <label className="mb-1 block text-sm font-medium text-zinc-800">Preferred date</label>
                       <input
@@ -209,7 +195,7 @@ export default function GetBuddyButton({ sport, sessionKey }: GetBuddyButtonProp
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full rounded-xl bg-red-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-red-800 disabled:opacity-60"
+                      className="btn-press mt-6 w-full rounded-xl bg-red-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-red-800 disabled:opacity-60"
                     >
                       {loading ? 'Finding a match…' : 'Submit request'}
                     </button>

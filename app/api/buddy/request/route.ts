@@ -26,6 +26,23 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
   }
 
+  // Rate limit: max 4 requests per sport per day
+  const todayStart = new Date()
+  todayStart.setHours(0, 0, 0, 0)
+  const { count: todayCount } = await supabaseAdmin
+    .from('buddy_requests')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', user.id)
+    .eq('sport_name', sport_name)
+    .gte('created_at', todayStart.toISOString())
+
+  if ((todayCount ?? 0) >= 6) {
+    return NextResponse.json(
+      { error: 'You exceeded the maximum number of requests for this sport today. Try again tomorrow!' },
+      { status: 429 },
+    )
+  }
+
   // Cancel any previous open request from this user for the same sport so they
   // don't accumulate stale open rows.
   await supabaseAdmin
@@ -63,49 +80,49 @@ export async function POST(request: NextRequest) {
   const { data: candidates } = await supabaseAdmin
     .from('buddy_requests')
     .select('id, user_id, display_name, degree, preferred_time_start, preferred_time_end')
-    .eq('status', 'open')
+    .in('status', ['open', 'matched'])
     .eq('sport_name', sport_name)
     .eq('preferred_date', preferred_date)
     .neq('user_id', user.id)
     .neq('id', newRequest.id)
     .order('created_at', { ascending: true })
 
-  // Find overlapping time slot
+  // Find ALL overlapping time slots
   const myStart = timeToMinutes(preferred_time_start)
   const myEnd = timeToMinutes(preferred_time_end)
-  const candidate = candidates?.find((r) => {
+  const overlapping = candidates?.filter((r) => {
     const cStart = timeToMinutes(r.preferred_time_start)
     const cEnd = timeToMinutes(r.preferred_time_end)
-    // Overlap if one starts before the other ends and ends after the other starts
     return myStart < cEnd && myEnd > cStart
-  })
+  }) ?? []
 
-  if (candidate) {
-    // Record the match and update both rows atomically-ish
-    await supabaseAdmin.from('buddy_matches').insert({
-      request_a: newRequest.id,
-      request_b: candidate.id,
-    })
+  if (overlapping.length > 0) {
+    // Create a match with every overlapping candidate
+    await supabaseAdmin.from('buddy_matches').insert(
+      overlapping.map((c) => ({ request_a: newRequest.id, request_b: c.id }))
+    )
 
     await Promise.all([
       supabaseAdmin
         .from('buddy_requests')
         .update({ status: 'matched' })
         .eq('id', newRequest.id),
-      supabaseAdmin
-        .from('buddy_requests')
-        .update({ status: 'matched' })
-        .eq('id', candidate.id),
+      ...overlapping.map((c) =>
+        supabaseAdmin
+          .from('buddy_requests')
+          .update({ status: 'matched' })
+          .eq('id', c.id)
+      ),
     ])
 
     return NextResponse.json({
       matched: true,
-      buddy: {
-        display_name: candidate.display_name,
-        degree: candidate.degree,
-        preferred_time_start: candidate.preferred_time_start,
-        preferred_time_end: candidate.preferred_time_end,
-      },
+      buddies: overlapping.map((c) => ({
+        display_name: c.display_name,
+        degree: c.degree,
+        preferred_time_start: c.preferred_time_start,
+        preferred_time_end: c.preferred_time_end,
+      })),
     })
   }
 
