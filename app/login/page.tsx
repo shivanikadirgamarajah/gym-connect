@@ -49,7 +49,7 @@ export default function LoginPage() {
     if (error) {
       setMessage(error.message)
     } else {
-      setMessage('Code sent. Check your email.')
+      setMessage('Code sent. Check your email. Do not forget to check spam!')
       setStep('otp')
     }
 
