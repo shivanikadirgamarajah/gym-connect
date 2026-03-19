@@ -126,6 +126,9 @@ export default function GetBuddyButton({ sport, sessionKey, userName, userDegree
                             </li>
                           ))}
                         </ul>
+                        <p className="mt-3 text-sm text-green-600">
+                          Head to the <strong>Messages</strong> tab to start chatting!
+                        </p>
                       </div>
                       <button
                         type="button"

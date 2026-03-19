@@ -82,6 +82,26 @@ export async function GET() {
     unreadByMatch[row.match_id] = (unreadByMatch[row.match_id] ?? 0) + 1
   }
 
+  // 5b. Get the latest message timestamp per match for sorting
+  const { data: latestMsgRows } = await supabaseAdmin
+    .from('messages')
+    .select('match_id, created_at')
+    .in('match_id', matchIds)
+    .order('created_at', { ascending: false })
+
+  const latestMsgByMatch: Record<string, string> = {}
+  for (const row of latestMsgRows ?? []) {
+    if (!latestMsgByMatch[row.match_id]) {
+      latestMsgByMatch[row.match_id] = row.created_at
+    }
+  }
+
+  // Build a map of match created_at for fallback sorting
+  const matchCreatedAt: Record<string, string> = {}
+  for (const m of matches) {
+    matchCreatedAt[m.id] = m.created_at
+  }
+
   // 6. Build conversation objects and deduplicate by person + time
   const seen = new Set<string>()
   const conversations = matchPairs
@@ -108,6 +128,19 @@ export async function GET() {
       }
     })
     .filter(Boolean)
+
+  // Sort: unread conversations first, then by latest message time (newest first),
+  // then by match creation time (newest first) if no messages
+  conversations.sort((a: any, b: any) => {
+    // Unread first
+    if (a.unread > 0 && b.unread === 0) return -1
+    if (a.unread === 0 && b.unread > 0) return 1
+
+    // Then by latest message time or match creation time (newest first)
+    const aTime = latestMsgByMatch[a.match_id] ?? matchCreatedAt[a.match_id] ?? ''
+    const bTime = latestMsgByMatch[b.match_id] ?? matchCreatedAt[b.match_id] ?? ''
+    return bTime.localeCompare(aTime)
+  })
 
   return NextResponse.json({ conversations })
 }
