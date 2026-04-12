@@ -7,12 +7,6 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 <img alt="Screenshot 1" src="1773930364069.jpeg" width="100%" />
 
 
-<img alt="Screenshot 2" src="1773930520321.jpeg" width="100%" />
-
-
-<img alt="Screenshot 3" src="1773930530611.jpeg" width="100%" />
-
-
 <img alt="Screenshot 4" src="1773930570730.jpeg" width="100%" />
 
 ---
