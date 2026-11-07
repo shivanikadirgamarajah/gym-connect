@@ -1,4 +1,5 @@
 import { supabaseAdmin } from '../app/supabase/supabase-admin'
+type YorkAppointment = Record<string, string>;
 
 async function fetchYorkAppointments(programId: string) {
   const response = await fetch(
@@ -16,7 +17,7 @@ async function fetchYorkAppointments(programId: string) {
 }
 
 function extractAppointmentsFromHtml(html: string) {
-  const appointments: any[] = []
+  const appointments: YorkAppointment[] = []
 
   const keyValueRegex = /appointments\[(\d+)]\[(.+?)]\r?\n([^\r\n]*)/g
 
@@ -36,7 +37,7 @@ function extractAppointmentsFromHtml(html: string) {
 }
 
 function mapAppointmentsToRows(
-  appointments: any[],
+  appointments: YorkAppointment[],
   programId: string,
   sourceUrl: string
 ) {

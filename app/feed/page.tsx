@@ -1,5 +1,4 @@
 import { redirect } from 'next/navigation'
-import Link from 'next/link'
 import { createClient } from '@/app/supabase/server'
 import LogoutButton from '@/app/components/LogoutButton'
 import MessagesButton from '@/app/components/MessagesButton'
