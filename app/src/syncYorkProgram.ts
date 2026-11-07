@@ -10,18 +10,7 @@ type YorkAppointment = {
   ClassSize: string | number
 }
 
-function formatDatePart(isoString: string) {
-  return isoString.slice(0, 10)
-}
 
-function formatTimePart(isoString: string) {
-  const date = new Date(isoString)
-  return date.toLocaleTimeString('en-CA', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  })
-}
 
 function buildSessionKey(
   programId: string,

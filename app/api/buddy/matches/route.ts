@@ -127,11 +127,11 @@ export async function GET() {
         avatar: other.display_name?.charAt(0).toUpperCase() || '?',
       }
     })
-    .filter(Boolean)
+    .filter((conversation) => conversation !== null)
 
   // Sort: unread conversations first, then by latest message time (newest first),
   // then by match creation time (newest first) if no messages
-  conversations.sort((a: any, b: any) => {
+  conversations.sort((a, b) => {
     // Unread first
     if (a.unread > 0 && b.unread === 0) return -1
     if (a.unread === 0 && b.unread > 0) return 1

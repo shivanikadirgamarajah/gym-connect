@@ -70,12 +70,11 @@ export default function MessagesPage() {
         // Replace state cleanly — drop any optimistic messages that the server now has
         setMessages((prev) => {
           const optimistic = prev.filter((m) => m.id.startsWith('temp-'))
-          const confirmed = serverMsgs.filter((sm) =>
+          /*const confirmed = serverMsgs.filter((sm) =>
             optimistic.some(
               (om) => om.content === sm.content && om.sender_id === sm.sender_id
             )
-          )
-          const confirmedIds = new Set(confirmed.map((c) => c.id))
+          )*/
           // Keep optimistic only if no matching server message exists yet
           const remaining = optimistic.filter(
             (om) =>

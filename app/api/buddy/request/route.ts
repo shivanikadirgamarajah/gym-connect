@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/app/supabase/server'
 import { supabaseAdmin } from '@/app/supabase/supabase-admin'
+import {
+  findMatches,
+  type BuddyRequest,
+} from '@/lib/matching'
 
-function timeToMinutes(time: string): number {
-  if (!time) return 0;
-  const [h, m] = time.split(':').map(Number)
-  return h * 60 + (m ?? 0)
-}
 
 export async function POST(request: NextRequest) {
   // Auth check
@@ -87,14 +86,51 @@ export async function POST(request: NextRequest) {
     .neq('id', newRequest.id)
     .order('created_at', { ascending: true })
 
-  // Find ALL overlapping time slots
-  const myStart = timeToMinutes(preferred_time_start)
-  const myEnd = timeToMinutes(preferred_time_end)
-  const overlapping = candidates?.filter((r) => {
-    const cStart = timeToMinutes(r.preferred_time_start)
-    const cEnd = timeToMinutes(r.preferred_time_end)
-    return myStart < cEnd && myEnd > cStart
-  }) ?? []
+
+  // Convert the new Supabase request to our matching format.
+  const myRequest: BuddyRequest = {
+    id: newRequest.id,
+    userId: user.id,
+    sport: sport_name,
+    date: preferred_date,
+    startTime: preferred_time_start,
+    endTime: preferred_time_end,
+  }
+
+  // Convert Supabase candidate rows.
+  const possibleBuddies: BuddyRequest[] = (
+    candidates ?? []
+  ).map((candidate) => ({
+    id: candidate.id,
+    userId: candidate.user_id,
+    sport: sport_name,
+    date: preferred_date,
+    startTime: candidate.preferred_time_start,
+    endTime: candidate.preferred_time_end,
+  }))
+
+  // Require 15 minutes of overlap.
+  // Remove duplicate students and rank by overlap.
+  const rankedMatches = findMatches(
+    myRequest,
+    possibleBuddies,
+    15
+  )
+
+  // Keep the original database row objects.
+  const candidateById = new Map(
+    (candidates ?? []).map((candidate) => [
+      candidate.id,
+      candidate,
+    ])
+  )
+
+  const overlapping = rankedMatches.flatMap(
+    ({ request }) => {
+      const candidate = candidateById.get(request.id)
+      return candidate ? [candidate] : []
+    }
+  )
 
   if (overlapping.length > 0) {
     // Create a match with every overlapping candidate

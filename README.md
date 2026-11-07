@@ -47,14 +47,13 @@ cd gym-connect
 npm install
 ```
 
-Create a `.env.local` file in the project root:
+Copy the example file to `.env.local` in the project root:
 
-```dotenv
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
+```bash
+cp .env.example .env.local
 ```
 
-You can use `NEXT_PUBLIC_SUPABASE_ANON_KEY` instead of the publishable-key variable if your Supabase project uses an anon key.
+Set the Supabase values in `.env.local`. You can use `NEXT_PUBLIC_SUPABASE_ANON_KEY` instead of the publishable-key variable if your project uses an anon key. The service-role key is only needed for server-side admin operations; never expose it as a `NEXT_PUBLIC_*` variable or commit `.env.local`.
 
 Then run:
 

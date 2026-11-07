@@ -143,7 +143,7 @@ export default function GetBuddyButton({ sport, sessionKey, userName, userDegree
                       <div className="rounded-xl bg-amber-50 border border-amber-200 p-6">
                         <p className="text-base font-semibold text-amber-800">Request saved!</p>
                         <p className="mt-2 text-sm text-amber-700">
-                          No one is available right now for {date} around {time}. We'll notify you when someone with an overlapping time signs up.
+                          No one is available right now for {date} around {time}. We&apos;ll notify you when someone with an overlapping time signs up.
                         </p>
                       </div>
                       <button
