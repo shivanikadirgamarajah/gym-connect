@@ -18,6 +18,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  const emailDomain = user.email?.trim().toLowerCase().split('@')[1] ?? ''
+  if (emailDomain !== 'yorku.ca' && !emailDomain.endsWith('.yorku.ca')) {
+    return NextResponse.json({ error: 'A York University email is required.' }, { status: 403 })
+  }
+
   const body = await request.json()
   const { sport_name, display_name, degree, preferred_date, preferred_time_start, preferred_time_end, session_key } = body
 

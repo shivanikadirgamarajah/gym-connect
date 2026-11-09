@@ -10,6 +10,11 @@ type Session = {
   source_url: string | null
 }
 
+function isYorkEmail(email: string | undefined) {
+  const domain = email?.trim().toLowerCase().split('@')[1] ?? ''
+  return domain === 'yorku.ca' || domain.endsWith('.yorku.ca')
+}
+
 function hasSportBackground(sport: string) {
   return /badminton|basketball|bingo|game\s*-?\s*night|trivia\s*-?\s*night|futsal|volleyball|pickleball|turf\s*-?\s*soccer|turfsoccer|soccer|squash|table[ _-]?tennis|tennis|board[ _-]?games/i.test(sport)
 }
@@ -89,7 +94,7 @@ export default async function FeedPage() {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user) {
+  if (!user || !isYorkEmail(user.email)) {
     redirect('/login')
   }
 

@@ -1,7 +1,9 @@
 'use client'
 
 import { FormEvent, useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { createPortal } from 'react-dom'
+import { createClient } from '@/app/supabase/client'
 
 type Buddy = { display_name: string; degree: string; preferred_time_start: string; preferred_time_end: string }
 
@@ -17,6 +19,8 @@ type GetBuddyButtonProps = {
 }
 
 export default function GetBuddyButton({ sport, sessionKey, userName, userDegree }: GetBuddyButtonProps) {
+  const router = useRouter()
+  const supabase = createClient()
   const [mounted, setMounted] = useState(false)
   const [open, setOpen] = useState(false)
   const [date, setDate] = useState('')
@@ -25,6 +29,8 @@ export default function GetBuddyButton({ sport, sessionKey, userName, userDegree
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<MatchResult | null>(null)
   const [error, setError] = useState('')
+  const [requestUserName, setRequestUserName] = useState(userName)
+  const [requestUserDegree, setRequestUserDegree] = useState(userDegree)
 
     const time = `${timeStart} - ${timeEnd}`;
 
@@ -45,8 +51,8 @@ export default function GetBuddyButton({ sport, sessionKey, userName, userDegree
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sport_name: sport,
-          display_name: userName,
-          degree: userDegree,
+          display_name: requestUserName,
+          degree: requestUserDegree,
           preferred_date: date,
           preferred_time_start: timeStart,
           preferred_time_end: timeEnd,
@@ -72,11 +78,26 @@ export default function GetBuddyButton({ sport, sessionKey, userName, userDegree
     setMounted(true)
   }, [])
 
+  async function handleClick() {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      router.push('/login')
+      return
+    }
+
+    setRequestUserName(userName ?? user.user_metadata?.display_name)
+    setRequestUserDegree(userDegree ?? user.user_metadata?.degree)
+    setOpen(true)
+  }
+
   return (
     <>
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={handleClick}
         className="btn-press text-sm font-semibold text-red-600 underline underline-offset-2 transition-colors hover:text-red-800"
       >
         get a buddy

@@ -68,7 +68,7 @@ export default function Home() {
               Get started free →
             </Link>
             <Link
-              href="/feed"
+              href="/public-feed"
               className="btn-press rounded-full border border-white/20 bg-white/5 px-7 py-3 text-sm font-semibold text-white/80 backdrop-blur transition hover:bg-white/10 hover:-translate-y-0.5"
             >
               View live feed
