@@ -133,16 +133,33 @@ export async function POST(request: NextRequest) {
   )
 
   if (overlapping.length > 0) {
-    // Create a match with every overlapping candidate
-    await supabaseAdmin.from('buddy_matches').insert(
-      overlapping.map((c) => ({ request_a: newRequest.id, request_b: c.id }))
-    )
 
-    await Promise.all([
+    const { error: matchInsertError } = await supabaseAdmin
+      .from('buddy_matches')
+      .insert(
+        overlapping.map((c) => ({
+          request_a: newRequest.id,
+          request_b: c.id,
+        }))
+      )
+
+    if (matchInsertError) {
+      console.error('Failed to create buddy matches:', matchInsertError)
+
+      return NextResponse.json(
+        { error: 'Failed to create buddy matches' },
+        { status: 500 }
+      )
+    }
+
+
+
+    const statusResults = await Promise.all([
       supabaseAdmin
         .from('buddy_requests')
         .update({ status: 'matched' })
         .eq('id', newRequest.id),
+
       ...overlapping.map((c) =>
         supabaseAdmin
           .from('buddy_requests')
@@ -150,6 +167,20 @@ export async function POST(request: NextRequest) {
           .eq('id', c.id)
       ),
     ])
+
+    const statusErrors = statusResults
+      .map((result) => result.error)
+      .filter((error) => error !== null)
+
+    if (statusErrors.length > 0) {
+      console.error('Failed to update buddy request statuses:', statusErrors)
+
+      return NextResponse.json(
+        { error: 'Failed to update buddy request statuses' },
+        { status: 500 }
+      )
+    }
+
 
     return NextResponse.json({
       matched: true,
