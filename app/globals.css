@@ -52,6 +52,38 @@ button {
   touch-action: manipulation;
 }
 
+.github-link {
+  align-items: center;
+  background: var(--surface-strong);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  bottom: 1rem;
+  box-shadow: 0 8px 20px -12px rgba(24, 34, 24, 0.5);
+  display: inline-flex;
+  gap: 0.45rem;
+  padding: 0.55rem 0.8rem;
+  position: fixed;
+  right: 1rem;
+  z-index: 20;
+  transition: background-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+}
+
+.github-link:hover {
+  background: var(--accent-soft);
+  box-shadow: 0 10px 24px -12px rgba(24, 34, 24, 0.6);
+  transform: translateY(-1px);
+}
+
+.github-link:focus-visible {
+  outline: 3px solid rgba(35, 83, 71, 0.25);
+  outline-offset: 2px;
+}
+
+.github-link svg {
+  height: 1.15rem;
+  width: 1.15rem;
+}
+
 .surface-card {
   background: var(--surface-strong);
   border: 1px solid var(--line);
