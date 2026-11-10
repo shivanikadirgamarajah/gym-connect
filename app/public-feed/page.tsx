@@ -100,7 +100,7 @@ export default async function PublicFeedPage() {
           href="/login"
           className="btn-press rounded-full border border-red-200/40 bg-red-950/30 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-950/60"
         >
-          Sign in/ Sign wup
+          Sign in/ Sign up
         </Link>
       </header>
 
