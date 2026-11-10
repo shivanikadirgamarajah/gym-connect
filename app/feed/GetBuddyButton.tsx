@@ -100,6 +100,7 @@ export default function GetBuddyButton({ sport, sessionKey, userName, userDegree
         onClick={handleClick}
         className="group inline-flex items-center justify-center rounded-2xl border border-white/30 bg-red-900/75 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-red-950/20 backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:bg-red-800/80 hover:shadow-xl hover:shadow-red-950/30 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-red-300/60"
       >
+        <img src ="/buddy-wave.gif" alt="" className="buddy-gif" />
         <span className="relative">Get a buddy</span>
       </button>
 

@@ -244,3 +244,18 @@ input:focus, textarea:focus, select:focus {
 .skeleton-fast {
   animation: fastPulse 0.8s ease-in-out infinite;
 }
+
+.buddy-trigger {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.buddy-gif {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  pointer-events: none;
+}
