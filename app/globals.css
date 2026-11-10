@@ -244,3 +244,48 @@ input:focus, textarea:focus, select:focus {
 .skeleton-fast {
   animation: fastPulse 0.8s ease-in-out infinite;
 }
+
+
+/* Button container */
+.buddy-trigger {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Normal button text */
+.buddy-text {
+  position: relative;
+  z-index: 1;
+  transition: opacity 200ms ease;
+}
+
+/* GIF overlay */
+.buddy-gif {
+  position: absolute;
+  inset: 0;
+
+  width: 50%;
+  height: 100%;
+
+  object-fit: cover;
+  object-position: center;
+
+  opacity: 0;
+  z-index: 2;
+  pointer-events: none;
+
+  transition: opacity 200ms ease;
+}
+
+/* Show GIF on hover */
+.buddy-trigger:hover .buddy-gif,
+.buddy-trigger:focus-visible .buddy-gif {
+  opacity: 1;
+}
+
+/* Hide text on hover */
+.buddy-trigger:hover .buddy-text,
+.buddy-trigger:focus-visible .buddy-text {
+  opacity: 0;
+}
