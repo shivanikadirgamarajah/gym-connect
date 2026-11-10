@@ -246,37 +246,46 @@ input:focus, textarea:focus, select:focus {
 }
 
 
+/* Button container */
 .buddy-trigger {
   position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  overflow: visible;
+  overflow: hidden;
+  isolation: isolate;
 }
 
+/* Normal button text */
+.buddy-text {
+  position: relative;
+  z-index: 1;
+  transition: opacity 200ms ease;
+}
+
+/* GIF overlay */
 .buddy-gif {
   position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
+  inset: 0;
 
-  width: 48px;
-  height: 48px;
-  object-fit: contain;
+  width: 50%;
+  height: 100%;
+
+  object-fit: cover;
+  object-position: center;
 
   opacity: 0;
-  visibility: hidden;
-  transform: translate(-50%, 6px);
+  z-index: 2;
   pointer-events: none;
 
-  transition:
-    opacity 200ms ease,
-    transform 200ms ease,
-    visibility 200ms;
+  transition: opacity 200ms ease;
 }
 
-.group:hover .buddy-gif,
-.group:focus-visible .buddy-gif {
+/* Show GIF on hover */
+.buddy-trigger:hover .buddy-gif,
+.buddy-trigger:focus-visible .buddy-gif {
   opacity: 1;
-  visibility: visible;
-  transform: translate(-50%, 0);
+}
+
+/* Hide text on hover */
+.buddy-trigger:hover .buddy-text,
+.buddy-trigger:focus-visible .buddy-text {
+  opacity: 0;
 }
