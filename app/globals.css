@@ -245,17 +245,38 @@ input:focus, textarea:focus, select:focus {
   animation: fastPulse 0.8s ease-in-out infinite;
 }
 
+
 .buddy-trigger {
+  position: relative;
   display: inline-flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  overflow: visible;
 }
 
 .buddy-gif {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+
   width: 48px;
   height: 48px;
   object-fit: contain;
+
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, 6px);
   pointer-events: none;
+
+  transition:
+    opacity 200ms ease,
+    transform 200ms ease,
+    visibility 200ms;
+}
+
+.group:hover .buddy-gif,
+.group:focus-visible .buddy-gif {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
 }
