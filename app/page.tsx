@@ -65,7 +65,10 @@ export default function Home() {
           <div className="fade-rise stagger-2 mt-8 flex flex-col items-center gap-3 sm:flex-row">
             <Link
               href="/login"
-              className={buttonStyles('primary', 'rounded-full btn-press')}
+              className={buttonStyles(
+                'primary',
+                '!rounded-full px-7 py-3 btn-press shadow-lg shadow-red-950/25 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-red-950/35'
+              )}
             >
               Get started free →
             </Link>
