@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createPortal } from 'react-dom'
 import { createClient } from '@/app/supabase/client'
 import confetti from 'canvas-confetti'
+import { Button } from '@/app/components/ui/Button'
 
 type Buddy = { display_name: string; degree: string; preferred_time_start: string; preferred_time_end: string }
 
@@ -114,10 +115,10 @@ export default function GetBuddyButton({ sport, sessionKey, userName, userDegree
   return (
     <>
 
-      <button
+      <Button
         type="button"
         onClick={handleClick}
-        className="buddy-trigger group inline-flex items-center justify-center rounded-2xl border border-white/30 bg-red-900/75 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-red-950/20 backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:bg-red-800/80 hover:shadow-xl hover:shadow-red-950/30 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-red-300/60"
+        className="buddy-trigger group rounded-2xl border border-white/30 px-6 py-3 shadow-lg shadow-black/20 backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-black/30 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-[var(--accent-soft)]"
       >
         <span className="buddy-text">Get a buddy</span>
 
@@ -127,7 +128,7 @@ export default function GetBuddyButton({ sport, sessionKey, userName, userDegree
           aria-hidden="true"
           className="buddy-gif"
         />
-      </button>
+      </Button>
 
 
       {mounted && open
@@ -189,13 +190,13 @@ export default function GetBuddyButton({ sport, sessionKey, userName, userDegree
                         Head to the <strong>Messages</strong> tab to start chatting!
                       </p>
                     </div>
-                    <button
+                    <Button
                       type="button"
                       onClick={closeModal}
-                      className="btn-press w-full rounded-xl bg-red-700 px-4 py-3 text-sm font-semibold text-white hover:bg-red-800"
+                      className="btn-press w-full"
                     >
                       Done
-                    </button>
+                    </Button>
                   </div>
                 ) : (
                   <div className="mt-8 space-y-6">
@@ -208,13 +209,13 @@ export default function GetBuddyButton({ sport, sessionKey, userName, userDegree
                         No one is available right now for {date} around {time}. We&apos;ll notify you when someone with an overlapping time signs up.
                       </p>
                     </div>
-                    <button
+                    <Button
                       type="button"
                       onClick={closeModal}
-                      className="btn-press w-full rounded-xl bg-red-700 px-4 py-3 text-sm font-semibold text-white hover:bg-red-800"
+                      className="btn-press w-full"
                     >
                       Done
-                    </button>
+                    </Button>
                   </div>
                 )
               ) : (
@@ -257,13 +258,13 @@ export default function GetBuddyButton({ sport, sessionKey, userName, userDegree
                     <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
                   )}
 
-                  <button
+                  <Button
                     type="submit"
                     disabled={loading}
-                    className="btn-press mt-2 w-full rounded-xl bg-red-700 px-4 py-3 text-sm font-semibold text-white hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="btn-press mt-2 w-full"
                   >
                     {loading ? 'Finding a match…' : 'Submit request'}
-                  </button>
+                  </Button>
                 </form>
               )}
             </div>

@@ -1,7 +1,9 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/app/supabase/server'
+import FeedHeader from '@/app/components/FeedHeader'
 import LogoutButton from '@/app/components/LogoutButton'
 import MessagesButton from '@/app/components/MessagesButton'
+import SportCard, { hasSportBackground } from '@/app/components/SportCard'
 import GetBuddyButton from './GetBuddyButton'
 
 type Session = {
@@ -13,59 +15,6 @@ type Session = {
 function isYorkEmail(email: string | undefined) {
   const domain = email?.trim().toLowerCase().split('@')[1] ?? ''
   return domain === 'yorku.ca' || domain.endsWith('.yorku.ca')
-}
-
-function hasSportBackground(sport: string) {
-  return /badminton|basketball|bingo|game\s*-?\s*night|trivia\s*-?\s*night|futsal|volleyball|pickleball|turf\s*-?\s*soccer|turfsoccer|soccer|squash|table[ _-]?tennis|tennis|board[ _-]?games/i.test(sport)
-}
-
-function getSportCardBackground(sport: string) {
-        if (/tennis/i.test(sport) && !/table[ _-]?tennis/i.test(sport)) {
-          return "linear-gradient(rgba(18, 32, 10, 0.32), rgba(18, 32, 10, 0.32)), url('/tennis.jpg')"
-        }
-      if (/table[ _-]?tennis/i.test(sport)) {
-        return "linear-gradient(rgba(26, 12, 8, 0.22), rgba(26, 12, 8, 0.22)), url('/tabletennis.jpg')"
-      }
-    if (/squash/i.test(sport)) {
-      return "linear-gradient(rgba(20, 10, 24, 0.54), rgba(20, 10, 24, 0.54)), url('/squash.jpg')"
-    }
-  if (/badminton/i.test(sport)) {
-    return "linear-gradient(rgba(10, 24, 20, 0.58), rgba(10, 24, 20, 0.58)), url('/badminton-bg.jpeg')"
-  }
-
-  if (/basketball/i.test(sport)) {
-    return "linear-gradient(rgba(26, 12, 8, 0.55), rgba(26, 12, 8, 0.55)), url('/basketball-bg.jpg')"
-  }
-
-  if (/bingo/i.test(sport)) {
-    return "linear-gradient(rgba(35, 18, 10, 0.52), rgba(35, 18, 10, 0.52)), url('/bingo-bg.jpg')"
-  }
-
-  if (/board[ _-]?games/i.test(sport)) {
-    return "linear-gradient(rgba(17, 14, 28, 0.56), rgba(17, 14, 28, 0.56)), url('/gamenight-bg.jpg')"
-  }
-
-  if (/trivia\s*-?\s*night/i.test(sport)) {
-    return "linear-gradient(rgba(17, 14, 28, 0.56), rgba(17, 14, 28, 0.56)), url('/trivia.jpg')"
-  }
-
-  if (/futsal/i.test(sport)) {
-    return "linear-gradient(rgba(9, 22, 17, 0.52), rgba(9, 22, 17, 0.52)), url('/futsal.jpg')"
-  }
-
-  if (/volleyball/i.test(sport)) {
-    return "linear-gradient(rgba(11, 19, 30, 0.5), rgba(11, 19, 30, 0.5)), url('/volleyball.jpg')"
-  }
-
-  if (/pickleball/i.test(sport)) {
-    return "linear-gradient(rgba(16, 23, 10, 0.5), rgba(16, 23, 10, 0.5)), url('/pickleball.jpg')"
-  }
-
-  if (/turf\s*-?\s*soccer|turfsoccer|soccer/i.test(sport)) {
-    return "linear-gradient(rgba(8, 24, 10, 0.54), rgba(8, 24, 10, 0.54)), url('/turfsoccer.jpg')"
-  }
-
-  return undefined
 }
 
 function getDetailsLink(session: Session) {
@@ -125,17 +74,11 @@ export default async function FeedPage() {
   )
 
   return (
-    <main className="min-h-screen w-full p-6 text-zinc-900 md:p-8">
-      <div className="fade-rise sticky top-0 z-30 -mx-6 -mt-6 flex flex-wrap justify-between items-center gap-3 border border-red-950 bg-red-900/95 p-4 text-red-50 backdrop-blur md:-mx-8 md:-mt-8 md:p-5">
-        <div className="flex flex-wrap items-baseline gap-2">
-          <h1 className="text-2xl font-semibold md:text-3xl">Buddy Finder</h1>
-          <p className="text-sm text-red-200">find your partner to play a sport!</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <MessagesButton />
-          <LogoutButton />
-        </div>
-      </div>
+    <main className="min-h-screen w-full p-6 text-[var(--foreground)] md:p-8">
+      <FeedHeader description="find your partner to play a sport!" sticky>
+        <MessagesButton />
+        <LogoutButton />
+      </FeedHeader>
 
       <p className="mt-4 text-sm ink-soft">Signed in as {user.email}</p>
 
@@ -147,19 +90,7 @@ export default async function FeedPage() {
           {sportEntries.length > 0 ? (
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
               {sportEntries.map(([sport, sportSessions], idx) => (
-                <article
-                  key={sport}
-                  className={`surface-card card-lift fade-rise min-h-70 rounded-2xl p-6 ${hasSportBackground(sport) ? 'border-white/40 text-white' : ''} ${idx % 2 === 0 ? 'stagger-1' : 'stagger-2'}`}
-                  style={
-                    hasSportBackground(sport)
-                      ? {
-                          backgroundImage: getSportCardBackground(sport),
-                          backgroundSize: 'cover',
-                          backgroundPosition: 'center',
-                        }
-                      : undefined
-                  }
-                >
+                <SportCard key={sport} sport={sport} index={idx}>
                   <div className="flex items-start gap-2">
                     <h3 className="text-xl font-semibold">{sport}</h3>
                   </div>
@@ -168,7 +99,7 @@ export default async function FeedPage() {
                     {sportSessions.map((session) => (
                       <li
                         key={session.session_key}
-                        className={`rounded-xl border p-4 ${hasSportBackground(sport) ? 'border-white/40 bg-white' : 'border-[var(--line)] bg-[var(--surface)]'}`}
+                        className={`rounded-xl border bg-[var(--surface)] p-4 ${hasSportBackground(sport) ? 'border-white/40' : 'border-[var(--line)]'}`}
                       >
                         <div className="mt-1 flex w-full items-center justify-between gap-6">
                           {getDetailsLink(session) ? (
@@ -186,7 +117,7 @@ export default async function FeedPage() {
                       </li>
                     ))}
                   </ul>
-                </article>
+                </SportCard>
               ))}
             </div>
           ) : (
