@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import FeedHeader from '@/app/components/FeedHeader'
+import SportCard, { hasSportBackground } from '@/app/components/SportCard'
 import { createClient } from '@/app/supabase/server'
 import GetBuddyButton from '../feed/GetBuddyButton'
 
@@ -6,47 +8,6 @@ type Session = {
   session_key: string
   sport_name: string | null
   source_url: string | null
-}
-
-function hasSportBackground(sport: string) {
-  return /badminton|basketball|bingo|game\s*-?\s*night|trivia\s*-?\s*night|futsal|volleyball|pickleball|turf\s*-?\s*soccer|turfsoccer|soccer|squash|table[ _-]?tennis|tennis|board[ _-]?games/i.test(sport)
-}
-
-function getSportCardBackground(sport: string) {
-  if (/tennis/i.test(sport) && !/table[ _-]?tennis/i.test(sport)) {
-    return "linear-gradient(rgba(18, 32, 10, 0.32), rgba(18, 32, 10, 0.32)), url('/tennis.jpg')"
-  }
-  if (/table[ _-]?tennis/i.test(sport)) {
-    return "linear-gradient(rgba(26, 12, 8, 0.22), rgba(26, 12, 8, 0.22)), url('/tabletennis.jpg')"
-  }
-  if (/squash/i.test(sport)) {
-    return "linear-gradient(rgba(20, 10, 24, 0.54), rgba(20, 10, 24, 0.54)), url('/squash.jpg')"
-  }
-  if (/badminton/i.test(sport)) {
-    return "linear-gradient(rgba(10, 24, 20, 0.58), rgba(10, 24, 20, 0.58)), url('/badminton-bg.jpeg')"
-  }
-  if (/basketball/i.test(sport)) {
-    return "linear-gradient(rgba(26, 12, 8, 0.55), rgba(26, 12, 8, 0.55)), url('/basketball-bg.jpg')"
-  }
-  if (/bingo/i.test(sport)) {
-    return "linear-gradient(rgba(35, 18, 10, 0.52), rgba(35, 18, 10, 0.52)), url('/bingo-bg.jpg')"
-  }
-  if (/board[ _-]?games/i.test(sport) || /trivia\s*-?\s*night/i.test(sport)) {
-    return "linear-gradient(rgba(17, 14, 28, 0.56), rgba(17, 14, 28, 0.56)), url('/gamenight-bg.jpg')"
-  }
-  if (/futsal/i.test(sport)) {
-    return "linear-gradient(rgba(9, 22, 17, 0.52), rgba(9, 22, 17, 0.52)), url('/futsal.jpg')"
-  }
-  if (/volleyball/i.test(sport)) {
-    return "linear-gradient(rgba(11, 19, 30, 0.5), rgba(11, 19, 30, 0.5)), url('/volleyball.jpg')"
-  }
-  if (/pickleball/i.test(sport)) {
-    return "linear-gradient(rgba(16, 23, 10, 0.5), rgba(16, 23, 10, 0.5)), url('/pickleball.jpg')"
-  }
-  if (/turf\s*-?\s*soccer|turfsoccer|soccer/i.test(sport)) {
-    return "linear-gradient(rgba(8, 24, 10, 0.54), rgba(8, 24, 10, 0.54)), url('/turfsoccer.jpg')"
-  }
-  return undefined
 }
 
 function getDetailsLink(session: Session) {
@@ -91,18 +52,14 @@ export default async function PublicFeedPage() {
 
   return (
     <main className="min-h-screen w-full p-6 text-zinc-900 md:p-8">
-      <header className="fade-rise -mx-6 -mt-6 flex flex-wrap items-center justify-between gap-3 border border-red-950 bg-red-900 p-4 text-red-50 md:-mx-8 md:-mt-8 md:p-5">
-        <div>
-          <h1 className="text-2xl font-semibold md:text-3xl">Buddy Finder</h1>
-          <p className="mt-1 text-sm text-red-200">Browse active York recreation sessions.</p>
-        </div>
+      <FeedHeader description="Browse active York recreation sessions.">
         <Link
           href="/login"
-          className="btn-press rounded-full border border-red-200/40 bg-red-950/30 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-950/60"
+          className="btn-press rounded-full border border-white/40 bg-black/20 px-4 py-2 text-sm font-medium text-white transition hover:bg-black/35"
         >
           Sign in/ Sign up
         </Link>
-      </header>
+      </FeedHeader>
 
       {error ? (
         <p className="mt-6 text-sm text-red-600">Failed to load sessions: {error.message}</p>
@@ -113,19 +70,7 @@ export default async function PublicFeedPage() {
           <p className="text-sm ink-soft">Sign in to find a buddy and connect with other students.</p>
           <div className="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
             {sportEntries.map(([sport, sportSessions], idx) => (
-              <article
-                key={sport}
-                className={`surface-card card-lift fade-rise min-h-70 rounded-2xl p-6 ${hasSportBackground(sport) ? 'border-white/40 text-white' : ''} ${idx % 2 === 0 ? 'stagger-1' : 'stagger-2'}`}
-                style={
-                  hasSportBackground(sport)
-                    ? {
-                      backgroundImage: getSportCardBackground(sport),
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
-                    }
-                    : undefined
-                }
-              >
+              <SportCard key={sport} sport={sport} index={idx}>
                 <h2 className="text-xl font-semibold">{sport}</h2>
                 <ul className="mt-5 space-y-3">
                   {sportSessions.map((session) => {
@@ -154,7 +99,7 @@ export default async function PublicFeedPage() {
                     )
                   })}
                 </ul>
-              </article>
+              </SportCard>
             ))}
           </div>
         </section>

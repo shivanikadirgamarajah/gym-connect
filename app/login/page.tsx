@@ -3,6 +3,9 @@
 import { FormEvent, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/app/supabase/client'
+import { Button } from '../components/ui/Button'
+import { Card } from '@/app/components/ui/Card'
+import { Input } from '@/app/components/ui/Input'
 
 export default function LoginPage() {
   const supabase = createClient()
@@ -78,78 +81,74 @@ export default function LoginPage() {
           BUDDY FINDER
         </h1>
 
-        <div className="surface-card fade-rise mx-auto mt-10 w-full max-w-md rounded-3xl p-7 md:mt-12 md:p-8">
-        <h1 className="text-3xl font-semibold mb-2">Login/Sign Up</h1>
-        <p className="text-sm ink-soft mb-6">
-          Use your university email to get a one-time code.
-        </p>
+        <Card className="fade-rise mx-auto mt-10 w-full max-w-md rounded-3xl p-7 md:mt-12 md:p-8">
+          <h1 className="text-3xl font-semibold mb-2">Login/Sign Up</h1>
+          <p className="text-sm ink-soft mb-6">
+            Use your university email to get a one-time code.
+          </p>
 
-        {step === 'email' ? (
-          <form onSubmit={handleSendOtp} className="space-y-4">
-            <div>
-              <label className="block text-sm mb-1 font-medium">University email</label>
-              <input
+          {step === 'email' ? (
+            <form onSubmit={handleSendOtp} className="space-y-4">
+              <Input
+                id="university-email"
+                label="University email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="yourname@yorku.ca"
-                className="w-full rounded-xl border border-[var(--line)] bg-[var(--surface)] px-3 py-2.5 outline-none focus:border-[var(--accent)]"
                 required
               />
-            </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="cta btn-press w-full rounded-xl px-4 py-2.5 font-medium"
-            >
-              {loading ? 'Sending...' : 'Send code'}
-            </button>
-          </form>
-        ) : (
-          <form onSubmit={handleVerifyOtp} className="space-y-4">
-            <div>
-              <label className="block text-sm mb-1 font-medium">Email</label>
-              <input
+              <Button
+                type="submit"
+                disabled={loading}
+                className="btn-press login-cta w-full"
+              >
+                {loading ? "Sending..." : "Send code"}
+              </Button>
+
+            </form>
+          ) : (
+            <form onSubmit={handleVerifyOtp} className="space-y-4">
+              <Input
+                id="login-email"
+                label="Email"
                 type="email"
                 value={email}
                 disabled
-                className="w-full rounded-xl border border-[var(--line)] bg-zinc-100 px-3 py-2.5"
               />
-            </div>
 
-            <div>
-              <label className="block text-sm mb-1 font-medium">8-digit code</label>
-              <input
+              <Input
+                id="login-code"
+                label="8-digit code"
                 type="text"
                 value={token}
                 onChange={(e) => setToken(e.target.value)}
                 placeholder="123456"
-                className="w-full rounded-xl border border-[var(--line)] bg-[var(--surface)] px-3 py-2.5 outline-none focus:border-[var(--accent)]"
                 required
               />
-            </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="cta btn-press w-full rounded-xl px-4 py-2.5 font-medium"
-            >
-              {loading ? 'Verifying...' : 'Verify code'}
-            </button>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="btn-press login-cta w-full"
+              >
+                {loading ? 'Verifying...' : 'Verify code'}
+              </Button>
 
-            <button
-              type="button"
-              onClick={() => setStep('email')}
-              className="btn-press w-full rounded-xl border border-[var(--line)] bg-[var(--surface)] px-4 py-2.5 text-sm transition hover:bg-zinc-50"
-            >
-              Use a different email
-            </button>
-          </form>
-        )}
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => setStep('email')}
+                className="btn-press w-full"
+              >
+                Use a different email
+              </Button>
+            </form>
+          )}
 
-        {message && <p className="mt-4 text-sm ink-soft">{message}</p>}
-        </div>
+          {message && <p className="mt-4 text-sm ink-soft">{message}</p>}
+        </Card>
       </div>
     </main>
   )

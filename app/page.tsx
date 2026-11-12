@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import { buttonStyles } from './components/ui/Button'
+import { Card } from './components/ui/Card'
 
 const SPORTS = ['Badminton', 'Basketball', 'Volleyball', 'Futsal', 'Pickleball', 'Bingo']
 
@@ -63,7 +65,7 @@ export default function Home() {
           <div className="fade-rise stagger-2 mt-8 flex flex-col items-center gap-3 sm:flex-row">
             <Link
               href="/login"
-              className="btn-press rounded-full bg-red-600 px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-red-900/40 transition hover:bg-red-500 hover:shadow-red-800/60 hover:-translate-y-0.5"
+              className={buttonStyles('primary', 'rounded-full btn-press')}
             >
               Get started free →
             </Link>
@@ -90,14 +92,15 @@ export default function Home() {
           {/* Feature cards */}
           <div className="fade-rise stagger-2 mt-14 grid w-full max-w-3xl gap-4 sm:grid-cols-3">
             {FEATURES.map((f) => (
-              <div
+              <Card
                 key={f.title}
-                className="rounded-2xl border border-white/10 bg-white/5 p-5 text-left backdrop-blur transition hover:bg-white/10 hover:border-white/20"
+                variant="dark"
+                className="border-white/10 bg-white/5 p-5 text-left shadow-none backdrop-blur transition hover:border-white/20 hover:bg-white/10"
               >
                 <span className="text-2xl">{f.icon}</span>
                 <p className="mt-3 text-sm font-semibold text-white">{f.title}</p>
                 <p className="mt-1 text-xs leading-relaxed text-white/50">{f.desc}</p>
-              </div>
+              </Card>
             ))}
           </div>
         </section>
