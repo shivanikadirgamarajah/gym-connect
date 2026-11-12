@@ -4,6 +4,7 @@ import { FormEvent, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createPortal } from 'react-dom'
 import { createClient } from '@/app/supabase/client'
+import confetti from 'canvas-confetti'
 
 type Buddy = { display_name: string; degree: string; preferred_time_start: string; preferred_time_end: string }
 
@@ -66,6 +67,23 @@ export default function GetBuddyButton({ sport, sessionKey, userName, userDegree
         setError(json.error ?? 'Something went wrong.')
       } else {
         setResult(json)
+        confetti({
+          particleCount: 150,
+          spread: 100,
+          startVelocity: 45,
+          gravity: 1,
+          scalar: 1.1,
+          origin: { x: 0.5, y: 0.6 },
+          colors: [
+            '#DC2626',
+            '#F87171',
+            '#FFFFFF',
+            '#FFD700',
+            '#FB923C',
+          ],
+          zIndex: 2000,
+          disableForReducedMotion: true,
+        })
       }
     } catch {
       setError('Network error. Please try again.')
