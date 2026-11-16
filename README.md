@@ -374,20 +374,6 @@ A complete database schema, migrations, and access-policy reference remain plann
 
 ---
 
-## Known limitations and future improvements
-
-The following improvements are planned:
-
-- [ ] Add version-controlled Supabase database migrations.
-- [ ] Provide reproducible local database initialization.
-- [ ] Document the complete database schema and access policies.
-- [ ] Expand integration testing for authentication and database operations.
-- [ ] Add end-to-end tests for the complete buddy-request flow.
-- [ ] Add automated testing for messaging workflows.
-- [ ] Expand API documentation to cover remaining routes.
-- [ ] Improve accessibility testing and document supported browsers.
-
----
 
 ## Contributing
 
